@@ -27,6 +27,16 @@ Hooks
      - EnumProfiles changed
      - schedules a 'select-profile' event unless Bluetooth autoswitch is enabled for a Bluetooth device
 
+   * - device/prefer-analog-plus-hdmi
+     - prefer-analog-plus-hdmi.lua
+     - select-profile
+     - if a stored analog-only profile is selected and analog+HDMI is available, clear the stored choice so find-best-profile can pick the dual profile
+
+   * - device/prefer-analog-plus-hdmi-on-route-changed
+     - prefer-analog-plus-hdmi.lua
+     - EnumRoute changed
+     - schedules select-profile on ALSA devices when jack availability changes
+
    * - device/select-route
      - select-routes.lua
      - device added or EnumRoute changed
