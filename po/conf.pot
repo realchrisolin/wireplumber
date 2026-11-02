@@ -213,6 +213,16 @@ msgstr ""
 msgid "No DSP"
 msgstr ""
 
+#. /wireplumber.settings.schema/node.keep-playing-default/description
+#: wireplumber.conf
+msgid "Do not automatically change the default sink while it is playing"
+msgstr ""
+
+#. /wireplumber.settings.schema/node.keep-playing-default/name
+#: wireplumber.conf
+msgid "Keep playing default"
+msgstr ""
+
 #. /wireplumber.settings.schema/node.restore-default-targets/description
 #: wireplumber.conf
 msgid "Remember and restore default audio/video input/output devices"

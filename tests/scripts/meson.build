@@ -144,6 +144,13 @@ test(
 )
 
 test(
+  'scripts/default-nodes/keep-playing-honor',
+  script_tester,
+  args: ['script-tests', 'default-nodes/keep-playing-honor.lua'],
+  env: common_env,
+)
+
+test(
   'scripts/node/suspend-idle-source',
   script_tester,
   args: ['script-tests', 'node/suspend-idle-source.lua'],

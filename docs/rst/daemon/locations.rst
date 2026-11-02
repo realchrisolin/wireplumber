@@ -214,7 +214,7 @@ can additionally be switched off at runtime with a setting:
   selection; ``wpctl clear-default`` erases them.
 
   :feature: ``hooks.default-nodes.state``
-  :settings: ``node.restore-default-targets``
+  :settings: ``node.restore-default-targets``, ``node.keep-playing-default``
 
 ``default-profile``
   The profile that the user has last selected on each device.

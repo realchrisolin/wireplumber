@@ -85,6 +85,10 @@ is required:
      - find-best-default-node.lua
      - prioritizes nodes based on their priority.session property & their associated Route priority
 
+   * - default-nodes/keep-playing-default-node
+     - keep-playing-default-node.lua
+     - keeps the applied default audio sink when it is playing, unless the user just set default.configured (node.keep-playing-default)
+
    * - default-nodes/apply-default-node
      - apply-default-node.lua
      - sets the highest priority selected node as the default in the metadata

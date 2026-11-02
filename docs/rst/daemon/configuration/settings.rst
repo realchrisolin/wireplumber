@@ -355,3 +355,14 @@ previous section: :ref:`config_configuration_option_types`.
    them so that it can restore them at a later time.
 
    :Default value: ``true``
+
+.. describe:: node.keep-playing-default
+
+   While the current default audio sink is playing, do not automatically
+   change it to another sink. An explicit user selection
+   (``wpctl set-default`` or the desktop audio panel) still applies.
+   If nothing is playing, restore and best-default selection may still
+   switch the default.
+
+   :Default value: ``false``
+   :See also: ``node.restore-default-targets``

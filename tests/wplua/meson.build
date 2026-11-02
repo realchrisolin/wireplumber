@@ -82,3 +82,9 @@ test(
   args: ['lua-api-tests', 'profile-utils.lua'],
   env: common_env,
 )
+test(
+  'wplua/lua-keep-playing-utils',
+  script_tester,
+  args: ['lua-api-tests', 'keep-playing-utils.lua'],
+  env: common_env,
+)
