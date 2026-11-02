@@ -80,4 +80,88 @@ function putils.compareProfiles (a, b, scores)
   end
 end
 
+local OUTPUT_PREFIX = "output:"
+local OUTPUT_HDMI = "output:hdmi"
+local OUTPUT_ANALOG = "output:analog"
+
+-- ACP profile names are '+' joined mappings, e.g.
+-- output:analog-stereo+output:hdmi-stereo+input:analog-stereo
+local function splitProfileParts (name)
+  local parts = {}
+  local set = {}
+  for part in string.gmatch (name or "", "[^+]+") do
+    table.insert (parts, part)
+    set [part] = true
+  end
+  return parts, set
+end
+
+local function hasOutputPrefix (name, prefix)
+  for _, part in ipairs (splitProfileParts (name)) do
+    if string.sub (part, 1, #prefix) == prefix then
+      return true
+    end
+  end
+  return false
+end
+
+-- Stored HDMI-only profiles are a deliberate TV / lid-closed choice.
+-- Analog+HDMI also contains those HDMI mappings, so restore must keep
+-- HDMI-only rather than following the best profile.
+local function isHdmiOnlyOutput (name)
+  return hasOutputPrefix (name, OUTPUT_HDMI)
+      and not hasOutputPrefix (name, OUTPUT_ANALOG)
+end
+
+-- Returns true if the candidate ACP profile name contains every mapping in
+-- the stored name and at least one extra output mapping. An extra input
+-- mapping is not enough. Analog-only and HDMI-only do not contain each
+-- other, so neither name follows the other here.
+function putils.offersExtraOutput (candidate, stored)
+  local candidate_parts, candidate_set = splitProfileParts (candidate)
+  local _, stored_set = splitProfileParts (stored)
+  local stored_count = 0
+
+  for part, _ in pairs (stored_set) do
+    stored_count = stored_count + 1
+    if not candidate_set [part] then
+      return false
+    end
+  end
+  if stored_count == 0 then
+    return false
+  end
+
+  for _, part in ipairs (candidate_parts) do
+    if not stored_set [part]
+        and string.sub (part, 1, #OUTPUT_PREFIX) == OUTPUT_PREFIX then
+      return true
+    end
+  end
+  return false
+end
+
+-- Returns true if restore should leave selected-profile unset so
+-- find-best-profile can run. That is the device.restore-profile.follow-best
+-- policy: an available profile that still offers the stored mappings, plus
+-- extra outputs, and that compareProfiles ranks above the stored profile.
+--
+-- off and pro-audio match find-best-profile.lua, which keeps those names
+-- out of the best-profile ranking. HDMI-only stays restored.
+function putils.shouldFollowBestProfile (stored, candidates, scores)
+  if not stored or stored.name == "off" or stored.name == "pro-audio"
+      or isHdmiOnlyOutput (stored.name) then
+    return false
+  end
+
+  for _, profile in ipairs (candidates) do
+    if profile.available ~= "no"
+        and putils.offersExtraOutput (profile.name, stored.name)
+        and putils.compareProfiles (profile, stored, scores) then
+      return true
+    end
+  end
+  return false
+end
+
 return putils

@@ -27,6 +27,11 @@ Hooks
      - EnumProfiles changed
      - schedules a 'select-profile' event unless Bluetooth autoswitch is enabled for a Bluetooth device
 
+   * - device/select-profile-on-device-enumroute-changed
+     - select-profile.lua
+     - EnumRoute changed
+     - schedules a 'select-profile' event on ALSA devices when jack availability changes, if device.restore-profile.follow-best is enabled (HDMI/DP plug often updates routes, not profiles)
+
    * - device/select-route
      - select-routes.lua
      - device added or EnumRoute changed
@@ -57,7 +62,7 @@ Hooks
 
    * - device/find-stored-profile
      - state-profile.lua
-     - selects the profile that has been stored in the state file (user's explicit selection)
+     - selects the profile that has been stored in the state file (user's explicit selection); follows find-best-profile when a better available profile offers the stored mappings plus extra outputs (device.restore-profile.follow-best)
 
    * - device/find-preferred-profile
      - find-preferred-profile.lua

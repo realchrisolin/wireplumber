@@ -12,6 +12,7 @@
 -- selected device profile to state file
 
 cutils = require ("common-utils")
+putils = require ("profile-utils")
 log = Log.open_topic ("s-device")
 
 -- the state meta storage
@@ -43,15 +44,39 @@ find_stored_profile_hook = SimpleEventHook {
     end
 
     local profile_name = state_meta:get (dev_name)
+    local profiles = {}
 
     if profile_name then
       for p in device:iterate_params ("EnumProfile") do
         local profile = cutils.parseParam (p, "EnumProfile")
-        if profile.name == profile_name and profile.available ~= "no" and
-            (not dont_restore_off_profile or profile.index ~= 0) then
-          selected_profile = profile
-          break
+        if profile then
+          table.insert (profiles, profile)
+          if profile.name == profile_name and profile.available ~= "no" and
+              (not dont_restore_off_profile or profile.index ~= 0) then
+            selected_profile = profile
+          end
         end
+      end
+    end
+
+    if selected_profile
+        and device_props["device.api"] == "alsa"
+        and not device_props["device.profile"]
+        and Settings.get_boolean ("device.restore-profile.follow-best") then
+      local routes = {}
+      for r in device:iterate_params ("EnumRoute") do
+        local route = cutils.parseParam (r, "EnumRoute")
+        if route then
+          table.insert (routes, route)
+        end
+      end
+      local scores = putils.buildOutputRouteScores (routes)
+      if putils.shouldFollowBestProfile (selected_profile, profiles, scores) then
+        log:info (device, string.format (
+            "Ignoring stored profile '%s' (%d) for device '%s'; "
+            .. "a better available profile exists",
+            selected_profile.name, selected_profile.index, dev_name))
+        return
       end
     end
 

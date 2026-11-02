@@ -157,3 +157,75 @@ do
   assert (putils.compareProfiles (A, B, scores))
   assert (not putils.compareProfiles (B, A, scores))
 end
+
+local ANALOG = "output:analog-stereo+input:analog-stereo"
+local DUAL = "output:analog-stereo+output:hdmi-stereo+input:analog-stereo"
+local HDMI = "output:hdmi-stereo+input:analog-stereo"
+local EXTRA1 = "output:analog-stereo+output:hdmi-stereo-extra1+input:analog-stereo"
+
+-- analog+HDMI offers analog's mappings plus an extra output; analog vs
+-- HDMI-only do not contain each other; extra1 is a different HDMI mapping
+do
+  assert (putils.offersExtraOutput (DUAL, ANALOG))
+  assert (not putils.offersExtraOutput (ANALOG, DUAL))
+  assert (not putils.offersExtraOutput (HDMI, ANALOG))
+  assert (not putils.offersExtraOutput (ANALOG, HDMI))
+  assert (putils.offersExtraOutput (DUAL, HDMI))
+  assert (putils.offersExtraOutput (EXTRA1, ANALOG))
+  assert (not putils.offersExtraOutput (DUAL, EXTRA1))
+  assert (not putils.offersExtraOutput (EXTRA1, DUAL))
+  assert (not putils.offersExtraOutput (ANALOG, ANALOG))
+  assert (not putils.offersExtraOutput (DUAL, ""))
+end
+
+-- analog stored, HDMI plugged: dual ranks above analog on usable routes
+do
+  local analog = { index = 1, name = ANALOG, priority = 6565, available = "yes" }
+  local hdmi = { index = 2, name = HDMI, priority = 5965, available = "yes" }
+  local dual = { index = 3, name = DUAL, priority = 6505, available = "yes" }
+  local scores = putils.buildOutputRouteScores ({
+    { index = 10, direction = "Output", profiles = { 1, 3 }, available = "unknown" },
+    { index = 12, direction = "Output", profiles = { 2, 3 }, available = "yes" },
+  })
+  local candidates = { analog, hdmi, dual }
+  assert (putils.shouldFollowBestProfile (analog, candidates, scores))
+  -- stored HDMI-only is a TV choice; analog+HDMI stays unrestored
+  assert (not putils.shouldFollowBestProfile (hdmi, candidates, scores))
+  assert (not putils.shouldFollowBestProfile (dual, candidates, scores))
+  assert (not putils.shouldFollowBestProfile (
+      { index = 0, name = "off", available = "yes" }, candidates, scores))
+  assert (not putils.shouldFollowBestProfile (
+      { index = 4, name = "pro-audio", available = "yes" }, candidates, scores))
+end
+
+-- analog stored, only HDMI-only is available: not an extra output on analog
+do
+  local analog = { index = 1, name = ANALOG, priority = 6565, available = "yes" }
+  local hdmi = { index = 2, name = HDMI, priority = 5965, available = "yes" }
+  local scores = putils.buildOutputRouteScores ({
+    { index = 10, direction = "Output", profiles = { 1 }, available = "unknown" },
+    { index = 12, direction = "Output", profiles = { 2 }, available = "yes" },
+  })
+  assert (not putils.shouldFollowBestProfile (analog, { analog, hdmi }, scores))
+end
+
+-- HDMI unplugged: dual is unavailable, restore analog
+do
+  local analog = { index = 1, name = ANALOG, priority = 6565, available = "yes" }
+  local dual = { index = 3, name = DUAL, priority = 6505, available = "no" }
+  local scores = putils.buildOutputRouteScores ({
+    { index = 10, direction = "Output", profiles = { 1, 3 }, available = "unknown" },
+    { index = 12, direction = "Output", profiles = { 3 }, available = "no" },
+  })
+  assert (not putils.shouldFollowBestProfile (analog, { analog, dual }, scores))
+end
+
+-- extra output mapping with no extra usable route: compareProfiles keeps analog
+do
+  local analog = { index = 1, name = ANALOG, available = "yes" }
+  local dual = { index = 3, name = DUAL, available = "yes" }
+  local scores = putils.buildOutputRouteScores ({
+    { index = 10, direction = "Output", profiles = { 1, 3 }, available = "unknown" },
+  })
+  assert (not putils.shouldFollowBestProfile (analog, { analog, dual }, scores))
+end

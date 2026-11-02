@@ -53,6 +53,16 @@ msgstr ""
 msgid "Persistent storage"
 msgstr ""
 
+#. /wireplumber.settings.schema/device.restore-profile.follow-best/description
+#: wireplumber.conf
+msgid "When restoring, use the best available profile if it offers the stored mappings plus extra outputs (for example analog+HDMI)"
+msgstr ""
+
+#. /wireplumber.settings.schema/device.restore-profile.follow-best/name
+#: wireplumber.conf
+msgid "Follow best profile"
+msgstr ""
+
 #. /wireplumber.settings.schema/device.restore-profile/description
 #: wireplumber.conf
 msgid "Remember and restore device profiles"

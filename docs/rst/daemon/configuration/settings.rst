@@ -86,6 +86,19 @@ previous section: :ref:`config_configuration_option_types`.
 
    :Default value: ``true``
 
+.. describe:: device.restore-profile.follow-best
+
+   When restoring a stored ALSA device profile, use the best available profile
+   instead if it offers the same mappings plus extra outputs (for example analog
+   speakers plus HDMI) and has more usable output routes. The upgrade is not
+   saved, so the stored profile is used again when the extra output disappears.
+
+   Stored HDMI-only, Pro Audio and Off profiles are still restored, as is a
+   profile pinned with ``device.profile``.
+
+   :Default value: ``true``
+   :See also: ``device.restore-profile``
+
 .. describe:: device.restore-routes
 
    When a device route is changed manually (e.g. via pavucontrol), WirePlumber

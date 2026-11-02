@@ -220,7 +220,7 @@ can additionally be switched off at runtime with a setting:
   The profile that the user has last selected on each device.
 
   :feature: ``hooks.device.profile.state``
-  :settings: ``device.restore-profile``
+  :settings: ``device.restore-profile``, ``device.restore-profile.follow-best``
 
 ``default-routes``
   The routes (ports) that the user has last selected on each device profile,
