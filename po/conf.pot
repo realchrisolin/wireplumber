@@ -215,7 +215,7 @@ msgstr ""
 
 #. /wireplumber.settings.schema/node.keep-playing-default/description
 #: wireplumber.conf
-msgid "Do not automatically change the default sink while it is playing"
+msgid "Do not automatically change the default sink or ALSA card profile while a sink is playing"
 msgstr ""
 
 #. /wireplumber.settings.schema/node.keep-playing-default/name

@@ -26,6 +26,38 @@ end
 
 local OUTPUT_PREFIX = "output:"
 
+function u.splitProfileParts (name)
+  local parts = {}
+  local set = {}
+  for part in string.gmatch (name or "", "[^+]+") do
+    table.insert (parts, part)
+    set [part] = true
+  end
+  return parts, set
+end
+
+function u.offersExtraOutput (candidate, stored)
+  local candidate_parts, candidate_set = u.splitProfileParts (candidate)
+  local _, stored_set = u.splitProfileParts (stored)
+  local stored_count = 0
+  for part, _ in pairs (stored_set) do
+    stored_count = stored_count + 1
+    if not candidate_set [part] then
+      return false
+    end
+  end
+  if stored_count == 0 then
+    return false
+  end
+  for _, part in ipairs (candidate_parts) do
+    if not stored_set [part]
+        and string.sub (part, 1, #OUTPUT_PREFIX) == OUTPUT_PREFIX then
+      return true
+    end
+  end
+  return false
+end
+
 -- mapping is device.profile.name (e.g. analog-stereo). Match a whole ACP
 -- part, not a substring of another mapping.
 function u.profileHasMapping (profile_name, mapping)

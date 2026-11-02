@@ -10,6 +10,7 @@
 
 cutils = require ("common-utils")
 lutils = require ("linking-utils")
+kputils = require ("keep-playing-utils")
 
 log = Log.open_topic ("s-linking.mpris")
 
@@ -196,13 +197,35 @@ pause_hook = SimpleEventHook {
     },
   },
   execute = function (event)
+    local si = event:get_subject ()
+    if Settings.get_boolean ("node.keep-playing-default") then
+      local node = si:get_associated_proxy ("node")
+      local mapping = node and node.properties ["device.profile.name"] or ""
+      if mapping ~= "" then
+        local device_id = node.properties ["device.id"]
+        local source = event:get_source ()
+        local devices_om = source:call ("get-object-manager", "device")
+        local device = device_id and devices_om:lookup {
+          Constraint { "bound-id", "=", device_id, type = "gobject" },
+        }
+        if device then
+          for p in device:iterate_params ("Profile") do
+            local profile = cutils.parseParam (p, "Profile")
+            if profile and kputils.profileHasMapping (profile.name, mapping) then
+              log:info (si, "skipping MPRIS pause; mapping still on card profile")
+              return
+            end
+          end
+        end
+      end
+    end
+
     local players = mpris:call ("get-players")
     if next(players) == nil then
       return
     end
 
     -- find clients to handle
-    local si = event:get_subject ()
     local source = event:get_source ()
     local client_om = source:call ("get-object-manager", "client")
     local node = si:get_associated_proxy ("node")

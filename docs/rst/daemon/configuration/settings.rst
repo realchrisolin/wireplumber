@@ -364,5 +364,10 @@ previous section: :ref:`config_configuration_option_types`.
    If nothing is playing, restore and best-default selection may still
    switch the default.
 
+   On ALSA cards, a richer profile may still be applied so extra outputs
+   appear. MPRIS pause is skipped when the removed sink's mapping is still
+   a whole part of the card profile. Profiles that would drop the playing
+   output stay held until playback stops.
+
    :Default value: ``false``
-   :See also: ``node.restore-default-targets``
+   :See also: ``node.restore-default-targets``, ``linking.pause-playback``

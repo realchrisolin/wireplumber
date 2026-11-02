@@ -21,6 +21,12 @@ local ANALOG = "output:analog-stereo+input:analog-stereo"
 local DUAL = "output:analog-stereo+output:hdmi-stereo+input:analog-stereo"
 local HDMI = "output:hdmi-stereo+input:analog-stereo"
 
+assert (kputils.offersExtraOutput (DUAL, ANALOG))
+assert (not kputils.offersExtraOutput (ANALOG, DUAL))
+assert (not kputils.offersExtraOutput (HDMI, ANALOG))
+assert (kputils.offersExtraOutput (DUAL, HDMI))
+assert (not kputils.offersExtraOutput (ANALOG, ANALOG))
+
 assert (kputils.profileHasMapping (DUAL, "analog-stereo"))
 assert (kputils.profileHasMapping (DUAL, "hdmi-stereo"))
 assert (not kputils.profileHasMapping (HDMI, "analog-stereo"))

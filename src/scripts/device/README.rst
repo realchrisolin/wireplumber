@@ -67,6 +67,10 @@ Hooks
      - find-best-profile.lua
      - finds the best profile for a device based on profile priorities and availability
 
+   * - device/keep-playing-profile
+     - keep-playing-profile.lua
+     - keeps the current ALSA profile while a sink on that card is playing, except extra-output upgrades (node.keep-playing-default)
+
    * - device/apply-profile
      - apply-profile.lua
      - applies the selected profile to the device
